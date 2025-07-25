@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Service | Busly - School Transport Solutions</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --busly-primary: #0056b3;
+            --busly-secondary: #FFC72C;
+            --busly-light: #f8f9fa;
+        }
+        
+        .request-hero {
+            background: linear-gradient(rgba(0, 86, 179, 0.9), rgba(0, 86, 179, 0.8)), 
+                        url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+        }
+        
+        .step-indicator {
+            position: relative;
+            padding-bottom: 20px;
+        }
+        
+        .step-indicator .step {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #dee2e6;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin: 0 auto 10px;
+        }
+        
+        .step-indicator .step.active {
+            background-color: var(--busly-primary);
+            color: white;
+        }
+        
+        .step-indicator .step.completed {
+            background-color: var(--busly-secondary);
+            color: var(--busly-primary);
+        }
+        
+        .step-indicator .step-title {
+            font-size: 0.8rem;
+            text-align: center;
+            color: #6c757d;
+        }
+        
+        .step-indicator .step-title.active {
+            color: var(--busly-primary);
+            font-weight: bold;
+        }
+        
+        .service-card {
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .service-card:hover {
+            border-color: var(--busly-primary);
+            transform: translateY(-5px);
+        }
+        
+        .service-card.selected {
+            border-color: var(--busly-primary);
+            background-color: rgba(0, 86, 179, 0.05);
+        }
+        
+        .form-section {
+            display: none;
+        }
+        
+        .form-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        #map-container {
+            height: 300px;
+            background-color: #eee;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .form-navigation {
+            border-top: 1px solid #dee2e6;
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<!-- Navigation (Same as homepage) -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--busly-primary);">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <img src="./image/bus-front-fill.svg" alt="Busly Logo" height="40">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarBusly">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarBusly">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Request Service</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Coverage Areas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+<!-- School Details Section -->
+<div class="form-section active" id="schoolDetailsSection">
+    <div class="row">
+        <div class="col-lg-6">
+            <h3 class="mb-4"><i class="bi bi-building me-2"></i> School Information</h3>
+            
+            <!-- School Basic Info -->
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Basic Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="schoolName" class="form-label">School Name*</label>
+                            <input type="text" class="form-control" id="schoolName" required 
+                                   placeholder="E.g. Greenfield International School">
+                            <div class="form-text">Official registered name</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="schoolRegNumber" class="form-label">Registration Number</label>
+                            <input type="text" class="form-control" id="schoolRegNumber" 
+                                   placeholder="If available">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="schoolType" class="form-label">School Type*</label>
+                            <select class="form-select" id="schoolType" required>
+                                <option value="" selected disabled>Select type</option>
+                                <option value="nursery">Nursery/Primary</option>
+                                <option value="secondary">Secondary</option>
+                                <option value="combined">Combined (Nursery-Secondary)</option>
+                                <option value="international">International School</option>
+                                <option value="special">Special Needs School</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="schoolCurriculum" class="form-label">Curriculum</label>
+                            <select class="form-select" id="schoolCurriculum">
+                                <option value="" selected disabled>Select curriculum</option>
+                                <option value="nigerian">Nigerian</option>
+                                <option value="british">British</option>
+                                <option value="american">American</option>
+                                <option value="igcse">IGCSE</option>
+                                <option value="montessori">Montessori</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- School Address -->
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">School Location</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="schoolState" class="form-label">State*</label>
+                            <select class="form-select" id="schoolState" required>
+                                <option value="" selected disabled>Select state</option>
+                                <option value="lagos" selected>Lagos</option>
+                                <option value="abuja">Abuja FCT</option>
+                                <option value="rivers">Rivers</option>
+                                <option value="oyo">Oyo</option>
+                                <option value="kano">Kano</option>
+                                <option value="others">Other States</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="schoolLGA" class="form-label">LGA*</label>
+                            <select class="form-select" id="schoolLGA" required>
+                                <option value="" selected disabled>Select LGA</option>
+                                <!-- Lagos Mainland LGAs would be dynamically populated -->
+                                <option value="mainland">Lagos Mainland</option>
+                                <option value="surulere">Surulere</option>
+                                <option value="ikeja">Ikeja</option>
+                                <option value="apapa">Apapa</option>
+                                <option value="others">Other LGAs</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label for="schoolAddress" class="form-label">Full Address*</label>
+                            <textarea class="form-control" id="schoolAddress" rows="2" required
+                                      placeholder="Street address, landmark, etc."></textarea>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="samePickupAddress">
+                                <label class="form-check-label" for="samePickupAddress">
+                                    School address is also the primary pickup point
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <!-- Contact Information -->
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Contact Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="contactPerson" class="form-label">Primary Contact Person*</label>
+                            <input type="text" class="form-control" id="contactPerson" required
+                                   placeholder="E.g. Mrs. Adebayo">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="contactPosition" class="form-label">Position*</label>
+                            <input type="text" class="form-control" id="contactPosition" required
+                                   placeholder="E.g. Transport Coordinator">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="contactEmail" class="form-label">Email*</label>
+                            <input type="email" class="form-control" id="contactEmail" required
+                                   placeholder="contact@school.edu.ng">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="contactPhone" class="form-label">Phone Number*</label>
+                            <div class="input-group">
+                                <span class="input-group-text">+234</span>
+                                <input type="tel" class="form-control" id="contactPhone" required
+                                       placeholder="802 123 4567" pattern="[0-9]{10}">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label for="alternateContact" class="form-label">Alternate Contact (Optional)</label>
+                            <input type="text" class="form-control" id="alternateContact"
+                                   placeholder="Name and phone number">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Student Information -->
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Student Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="totalStudents" class="form-label">Total Students*</label>
+                            <input type="number" class="form-control" id="totalStudents" min="1" required
+                                   placeholder="E.g. 250">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="transportNeeds" class="form-label">Need Transport*</label>
+                            <input type="number" class="form-control" id="transportNeeds" min="1" required
+                                   placeholder="E.g. 120">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Grade Levels Needing Transport</label>
+                            <div class="grade-levels">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="gradeNursery">
+                                    <label class="form-check-label" for="gradeNursery">Nursery</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="gradePrimary">
+                                    <label class="form-check-label" for="gradePrimary">Primary</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="gradeJSS">
+                                    <label class="form-check-label" for="gradeJSS">JSS</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="gradeSSS">
+                                    <label class="form-check-label" for="gradeSSS">SSS</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label for="specialNeeds" class="form-label">Special Requirements</label>
+                            <textarea class="form-control" id="specialNeeds" rows="2"
+                                      placeholder="Wheelchair access, medical needs, etc."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- School Schedule -->
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">School Schedule</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="schoolDays" class="form-label">School Days*</label>
+                            <select class="form-select" id="schoolDays" multiple>
+                                <option value="monday" selected>Monday</option>
+                                <option value="tuesday" selected>Tuesday</option>
+                                <option value="wednesday" selected>Wednesday</option>
+                                <option value="thursday" selected>Thursday</option>
+                                <option value="friday" selected>Friday</option>
+                                <option value="saturday">Saturday</option>
+                            </select>
+                            <div class="form-text">Select all applicable days</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="serviceStartDate" class="form-label">Desired Start Date*</label>
+                            <input type="date" class="form-control" id="serviceStartDate" required
+                                   min="<?= date('Y-m-d', strtotime('+1 week')) ?>">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="openingTime" class="form-label">School Opening Time*</label>
+                            <input type="time" class="form-control" id="openingTime" required value="07:30">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="closingTime" class="form-label">School Closing Time*</label>
+                            <input type="time" class="form-control" id="closingTime" required value="14:00">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="d-flex justify-content-between mt-4">
+        <button type="button" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i> Back
+        </button>
+        <button type="button" class="btn btn-primary">
+            Next: Route Information <i class="bi bi-arrow-right ms-2"></i>
+        </button>
+    </div>
+</div>
+
+<!-- Dynamic LGA Population Script -->
+<script>
+document.getElementById('schoolState').addEventListener('change', function() {
+    const state = this.value;
+    const lgaSelect = document.getElementById('schoolLGA');
+    lgaSelect.innerHTML = '<option value="" selected disabled>Select LGA</option>';
+    
+    if (state === 'lagos') {
+        // Lagos Mainland LGAs
+        const lagosLGAs = [
+            'Lagos Mainland', 'Surulere', 'Ikeja', 'Apapa', 'Eti-Osa', 
+            'Lagos Island', 'Amuwo-Odofin', 'Kosofe', 'Oshodi-Isolo', 
+            'Shomolu', 'Ajeromi-Ifelodun', 'Mushin', 'Ojo', 'Agege', 
+            'Ifako-Ijaiye', 'Alimosho', 'Badagry', 'Ikorodu', 'Epe', 'Ibeju-Lekki'
+        ];
+        
+        lagosLGAs.forEach(lga => {
+            const option = document.createElement('option');
+            option.value = lga.toLowerCase().replace(' ', '-');
+            option.textContent = lga;
+            lgaSelect.appendChild(option);
+        });
+    } else if (state === 'abuja') {
+        // Abuja area councils
+        const abujaAreas = [
+            'Abuja Municipal', 'Bwari', 'Gwagwalada', 'Kuje', 
+            'Kwali', 'Abaji', 'Karu'
+        ];
+        
+        abujaAreas.forEach(area => {
+            const option = document.createElement('option');
+            option.value = area.toLowerCase().replace(' ', '-');
+            option.textContent = area;
+            lgaSelect.appendChild(option);
+        });
+    }
+    // Add other states as needed
+});
+</script>

@@ -1,0 +1,441 @@
+!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Service | Busly - School Transport Solutions</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --busly-primary: #0056b3;
+            --busly-secondary: #FFC72C;
+            --busly-light: #f8f9fa;
+        }
+        
+        .request-hero {
+            background: linear-gradient(rgba(0, 86, 179, 0.9), rgba(0, 86, 179, 0.8)), 
+                        url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+        }
+        
+        .step-indicator {
+            position: relative;
+            padding-bottom: 20px;
+        }
+        
+        .step-indicator .step {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #dee2e6;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin: 0 auto 10px;
+        }
+        
+        .step-indicator .step.active {
+            background-color: var(--busly-primary);
+            color: white;
+        }
+        
+        .step-indicator .step.completed {
+            background-color: var(--busly-secondary);
+            color: var(--busly-primary);
+        }
+        
+        .step-indicator .step-title {
+            font-size: 0.8rem;
+            text-align: center;
+            color: #6c757d;
+        }
+        
+        .step-indicator .step-title.active {
+            color: var(--busly-primary);
+            font-weight: bold;
+        }
+        
+        .service-card {
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .service-card:hover {
+            border-color: var(--busly-primary);
+            transform: translateY(-5px);
+        }
+        
+        .service-card.selected {
+            border-color: var(--busly-primary);
+            background-color: rgba(0, 86, 179, 0.05);
+        }
+        
+        .form-section {
+            display: none;
+        }
+        
+        .form-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        #map-container {
+            height: 300px;
+            background-color: #eee;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .form-navigation {
+            border-top: 1px solid #dee2e6;
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<!-- Navigation (Same as homepage) -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--busly-primary);">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <img src="./image/bus-front-fill.svg" alt="Busly Logo" height="40">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarBusly">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarBusly">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Request Service</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Coverage Areas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+<!-- Review & Submit Section -->
+<section class="review-submit py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-primary text-white">
+            <h3 class="mb-0"><i class="bi bi-check-circle me-2"></i> Review & Submit</h3>
+          </div>
+          
+          <div class="card-body">
+            <!-- Progress Bar -->
+            <div class="mb-4">
+              <div class="d-flex justify-content-between mb-1">
+                <small>Step 4 of 4</small>
+                <small>100% Completed</small>
+              </div>
+              <div class="progress" style="height: 8px;">
+                <div class="progress-bar bg-success" style="width: 100%"></div>
+              </div>
+            </div>
+
+            <!-- Review Summary -->
+            <div class="mb-5">
+              <h5 class="mb-4 text-primary"><i class="bi bi-card-checklist me-2"></i> Please Review Your Information</h5>
+              
+              <!-- Service Summary -->
+              <div class="card mb-4">
+                <div class="card-header bg-light">
+                  <h6 class="mb-0"><i class="bi bi-bus-front me-2"></i> Service Details</h6>
+                </div>
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <p class="mb-2"><strong>Service Type:</strong> <span id="reviewServiceType">Daily School Runs</span></p>
+                      <p class="mb-2"><strong>Desired Start Date:</strong> <span id="reviewStartDate">15/09/2023</span></p>
+                    </div>
+                    <div class="col-md-6">
+                      <p class="mb-2"><strong>Coverage Area:</strong> <span id="reviewCoverageArea">Lagos Mainland</span></p>
+                      <p class="mb-2"><strong>Special Requirements:</strong> <span id="reviewSpecialNeeds">None</span></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- School Information -->
+              <div class="card mb-4">
+                <div class="card-header bg-light">
+                  <h6 class="mb-0"><i class="bi bi-building me-2"></i> School Information</h6>
+                </div>
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <p class="mb-2"><strong>School Name:</strong> <span id="reviewSchoolName">Greenfield International School</span></p>
+                      <p class="mb-2"><strong>School Type:</strong> <span id="reviewSchoolType">International School</span></p>
+                      <p class="mb-2"><strong>Curriculum:</strong> <span id="reviewCurriculum">British</span></p>
+                    </div>
+                    <div class="col-md-6">
+                      <p class="mb-2"><strong>Total Students:</strong> <span id="reviewTotalStudents">250</span></p>
+                      <p class="mb-2"><strong>Students Needing Transport:</strong> <span id="reviewTransportNeeds">120</span></p>
+                      <p class="mb-2"><strong>Classes:</strong> <span id="reviewClasses">Primary, Junior Secondary</span></p>
+                    </div>
+                    <div class="col-12 mt-2">
+                      <p class="mb-2"><strong>Address:</strong> <span id="reviewSchoolAddress">25 Toyin Street, Ikeja, Lagos</span></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Contact Information -->
+              <div class="card mb-4">
+                <div class="card-header bg-light">
+                  <h6 class="mb-0"><i class="bi bi-person-lines-fill me-2"></i> Contact Information</h6>
+                </div>
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <p class="mb-2"><strong>Contact Person:</strong> <span id="reviewContactPerson">Mrs. Adebayo</span></p>
+                      <p class="mb-2"><strong>Position:</strong> <span id="reviewContactPosition">Transport Coordinator</span></p>
+                    </div>
+                    <div class="col-md-6">
+                      <p class="mb-2"><strong>Email:</strong> <span id="reviewContactEmail">transport@greenfield.edu.ng</span></p>
+                      <p class="mb-2"><strong>Phone:</strong> <span id="reviewContactPhone">08012345678</span></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Route Information -->
+              <div class="card mb-4">
+                <div class="card-header bg-light">
+                  <h6 class="mb-0"><i class="bi bi-signpost-split me-2"></i> Route Information</h6>
+                </div>
+                <div class="card-body">
+                  <h6 class="mb-3">Morning Pickup Points</h6>
+                  <div class="table-responsive">
+                    <table class="table table-sm">
+                      <thead>
+                        <tr>
+                          <th>Location</th>
+                          <th>Time</th>
+                          <th>Address</th>
+                        </tr>
+                      </thead>
+                      <tbody id="reviewPickupPoints">
+                        <tr>
+                          <td>Maryland Bus Stop</td>
+                          <td>06:30 AM</td>
+                          <td>Under Maryland Bridge, Lagos</td>
+                        </tr>
+                        <tr>
+                          <td>Ikeja City Mall</td>
+                          <td>06:45 AM</td>
+                          <td>Parking Lot A, Ikeja</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  
+                  <h6 class="mb-3 mt-4">Afternoon Schedule</h6>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <p class="mb-2"><strong>School Pickup Time:</strong> <span id="reviewAfternoonPickup">02:30 PM</span></p>
+                    </div>
+                    <div class="col-md-6">
+                      <p class="mb-2"><strong>Estimated Dropoff Time:</strong> <span id="reviewDropoffTime">03:30 PM</span></p>
+                    </div>
+                  </div>
+                  
+                  <div id="reviewDropoffPointsSection" class="mt-3">
+                    <h6>Afternoon Dropoff Points</h6>
+                    <div class="table-responsive">
+                      <table class="table table-sm">
+                        <thead>
+                          <tr>
+                            <th>Location</th>
+                            <th>Time</th>
+                            <th>Address</th>
+                          </tr>
+                        </thead>
+                        <tbody id="reviewDropoffPoints">
+                          <tr>
+                            <td>Same as morning pickup points</td>
+                            <td>-</td>
+                            <td>-</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  
+                  <div class="mt-3">
+                    <p class="mb-2"><strong>Special Instructions:</strong></p>
+                    <p id="reviewSpecialInstructions" class="text-muted">None provided</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Final Confirmation -->
+            <div class="mb-4 p-4 bg-light rounded">
+              <h5 class="mb-3 text-primary"><i class="bi bi-shield-check me-2"></i> Final Confirmation</h5>
+              <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="confirmAccuracy" required>
+                <label class="form-check-label" for="confirmAccuracy">
+                  I confirm that all information provided is accurate
+                </label>
+              </div>
+              <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="agreeTerms" required>
+                <label class="form-check-label" for="agreeTerms">
+                  I agree to Busly's <a href="#" target="_blank">Terms of Service</a> and <a href="#" target="_blank">Privacy Policy</a>
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="receiveUpdates">
+                <label class="form-check-label" for="receiveUpdates">
+                  I want to receive updates about my service via WhatsApp
+                </label>
+              </div>
+            </div>
+            
+            <!-- Payment Information (Optional) -->
+            <div class="mb-4 p-4 bg-light rounded" id="paymentSection">
+              <h5 class="mb-3 text-primary"><i class="bi bi-credit-card me-2"></i> Payment Method</h5>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="paymentMethod" id="payOnline" checked>
+                    <label class="form-check-label" for="payOnline">
+                      Pay Online Now (5% Discount)
+                    </label>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="paymentMethod" id="payLater">
+                    <label class="form-check-label" for="payLater">
+                      Get Invoice (Pay Later)
+                    </label>
+                  </div>
+                </div>
+                <div class="col-12 mt-2" id="onlinePaymentFields">
+                  <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i> You'll be redirected to a secure payment page after submission
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Navigation -->
+            <div class="d-flex justify-content-between pt-4 border-top">
+              <button type="button" class="btn btn-outline-secondary px-4" id="backToRouteBtn">
+                <i class="bi bi-arrow-left me-2"></i> Back
+              </button>
+              <div>
+                <button type="button" class="btn btn-outline-primary px-4 me-2" id="saveDraftBtn">
+                  <i class="bi bi-save me-2"></i> Save Draft
+                </button>
+                <button type="submit" class="btn btn-success px-4" id="submitRequestBtn">
+                  <i class="bi bi-send-check me-2"></i> Submit Request
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<footer class="bg-dark text-white py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-0">&copy; 2025 Busly. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="#" class="text-white text-decoration-none me-3">Privacy Policy</a>
+                    <a href="#" class="text-white text-decoration-none">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+<!-- Review Data Population Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // In a real application, you would populate these from the form data
+  // This is just a demonstration of how it would work
+  
+  // Back button functionality
+  document.getElementById('backToRouteBtn').addEventListener('click', function() {
+    // In a real app, this would navigate back to the route info section
+    alert('Would navigate back to route information section');
+  });
+  
+  // Save draft functionality
+  document.getElementById('saveDraftBtn').addEventListener('click', function() {
+    // In a real app, this would save the form data to local storage or backend
+    alert('Draft saved successfully!');
+  });
+  
+  // Form submission
+  document.getElementById('submitRequestBtn').addEventListener('click', function() {
+    const form = document.getElementById('serviceRequestForm');
+    const confirmAccuracy = document.getElementById('confirmAccuracy');
+    const agreeTerms = document.getElementById('agreeTerms');
+    
+    if (!confirmAccuracy.checked || !agreeTerms.checked) {
+      alert('Please confirm the accuracy of your information and agree to the terms');
+      return;
+    }
+    
+    // Show loading state
+    this.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Submitting...';
+    this.disabled = true;
+    
+    // Simulate API call
+    setTimeout(function() {
+      // In a real app, this would submit to your backend
+      alert('Request submitted successfully! Our team will contact you within 24 hours.');
+      
+      // Redirect to confirmation page
+      window.location.href = 'confirmation.html';
+    }, 2000);
+  });
+  
+  // Toggle payment fields based on selection
+  const paymentMethods = document.querySelectorAll('input[name="paymentMethod"]');
+  paymentMethods.forEach(method => {
+    method.addEventListener('change', function() {
+      if (this.id === 'payOnline') {
+        document.getElementById('onlinePaymentFields').style.display = 'block';
+      } else {
+        document.getElementById('onlinePaymentFields').style.display = 'none';
+      }
+    });
+  });
+});
+</script>
+
+
+

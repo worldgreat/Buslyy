@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Service | Busly - School Transport Solutions</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --busly-primary: #0056b3;
+            --busly-secondary: #FFC72C;
+            --busly-light: #f8f9fa;
+        }
+        
+        .request-hero {
+            background: linear-gradient(rgba(0, 86, 179, 0.9), rgba(0, 86, 179, 0.8)), 
+                        url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+        }
+        
+        .step-indicator {
+            position: relative;
+            padding-bottom: 20px;
+        }
+        
+        .step-indicator .step {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #dee2e6;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin: 0 auto 10px;
+        }
+        
+        .step-indicator .step.active {
+            background-color: var(--busly-primary);
+            color: white;
+        }
+        
+        .step-indicator .step.completed {
+            background-color: var(--busly-secondary);
+            color: var(--busly-primary);
+        }
+        
+        .step-indicator .step-title {
+            font-size: 0.8rem;
+            text-align: center;
+            color: #6c757d;
+        }
+        
+        .step-indicator .step-title.active {
+            color: var(--busly-primary);
+            font-weight: bold;
+        }
+        
+        .service-card {
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .service-card:hover {
+            border-color: var(--busly-primary);
+            transform: translateY(-5px);
+        }
+        
+        .service-card.selected {
+            border-color: var(--busly-primary);
+            background-color: rgba(0, 86, 179, 0.05);
+        }
+        
+        .form-section {
+            display: none;
+        }
+        
+        .form-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        #map-container {
+            height: 300px;
+            background-color: #eee;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .form-navigation {
+            border-top: 1px solid #dee2e6;
+            padding-top: 20px;
+        }
+        .busly-brand-text {
+            font-weight: 700;
+            color: white;
+        }
+        
+        .busly-brand-tagline {
+            font-size: 0.75rem;
+            color: var(--busly-secondary);
+            display: block;
+            line-height: 1;}
+    </style>
+</head>
+<body>
+    <!-- Navigation (Same as homepage) -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--busly-primary);">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <img src="./image/bus-front-fill.svg" alt="Busly Logo" height="40">
+                <div>
+                    <span class="busly-brand-text">BUSLY</span>
+                    <span class="busly-brand-tagline">School Transport Solutions</span>
+                </div>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarBusly">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarBusly">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="./home.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="./requestservice.html">Request Service</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Coverage Areas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./contact.html">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+<!-- How It Works Section -->
+<section class="how-it-works py-5 bg-light">
+  <div class="container">
+    <div class="text-center mb-5">
+      
+      <h2 class="fw-bold">How Busly Works</h2>
+      <p class="lead text-muted">Safe, reliable school transportation in just 4 simple steps</p>
+    </div>
+
+    <!-- Vertical Stepper -->
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="steps">
+          <!-- Step 1 -->
+          <div class="step row g-4 align-items-center mb-5">
+            <div class="col-md-4 text-center text-md-end">
+              <div class="step-number bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center">
+                1
+              </div>
+            </div>
+            <div class="col-md-8">
+              <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                  <h4 class="mb-3">Request Service</h4>
+                  <p>Fill our simple online form with your school's details, location, and transport needs. Takes less than 5 minutes.</p>
+                  <ul class="list-unstyled">
+                    <li class="mb-1"><i class="bi bi-check-circle text-primary me-2"></i> No commitment required</li>
+                    <li class="mb-1"><i class="bi bi-check-circle text-primary me-2"></i> Get instant estimate</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="step row g-4 align-items-center mb-5">
+            <div class="col-md-8 order-md-1">
+              <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                  <h4 class="mb-3">Route Planning</h4>
+                  <p>Our logistics team designs optimal routes considering:</p>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <ul class="list-unstyled">
+                        <li class="mb-1"><i class="bi bi-geo-alt text-primary me-2"></i> Your locations</li>
+                        <li class="mb-1"><i class="bi bi-clock text-primary me-2"></i> School timings</li>
+                      </ul>
+                    </div>
+                    <div class="col-md-6">
+                      <ul class="list-unstyled">
+                        <li class="mb-1"><i class="bi bi-shield-check text-primary me-2"></i> Safety factors</li>
+                        <li class="mb-1"><i class="bi bi-traffic-cone text-primary me-2"></i> Traffic patterns</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 text-center text-md-start order-md-0">
+              <div class="step-number bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center">
+                2
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="step row g-4 align-items-center mb-5">
+            <div class="col-md-4 text-center text-md-end">
+              <div class="step-number bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center">
+                3
+              </div>
+            </div>
+            <div class="col-md-8">
+              <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                  <h4 class="mb-3">Driver Assignment</h4>
+                  <p>We match your route with our certified drivers who undergo:</p>
+                  <div class="d-flex flex-wrap gap-2">
+                    <span class="badge bg-primary bg-opacity-10 text-primary">Background checks</span>
+                    <span class="badge bg-primary bg-opacity-10 text-primary">Child safety training</span>
+                    <span class="badge bg-primary bg-opacity-10 text-primary">Defensive driving</span>
+                    <span class="badge bg-primary bg-opacity-10 text-primary">First aid certified</span>
+                  </div>
+                  <div class="mt-3">
+                    <img src="https://via.placeholder.com/400x200?text=Driver+Profile" alt="Driver vetting process" class="img-fluid rounded">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 4 -->
+          <div class="step row g-4 align-items-center">
+            <div class="col-md-8 order-md-1">
+              <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                  <h4 class="mb-3">Ongoing Service</h4>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="d-flex mb-3">
+                        <div class="me-3 text-primary">
+                          <i class="bi bi-phone fs-3"></i>
+                        </div>
+                        <div>
+                          <h5 class="h6">Parent App</h5>
+                          <p class="small">Real-time tracking and notifications</p>
+                        </div>
+                      </div>
+                      <div class="d-flex">
+                        <div class="me-3 text-primary">
+                          <i class="bi bi-shield-check fs-3"></i>
+                        </div>
+                        <div>
+                          <h5 class="h6">Safety Monitoring</h5>
+                          <p class="small">Speed alerts and route compliance</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="d-flex mb-3">
+                        <div class="me-3 text-primary">
+                          <i class="bi bi-headset fs-3"></i>
+                        </div>
+                        <div>
+                          <h5 class="h6">24/7 Support</h5>
+                          <p class="small">Dedicated helpline for emergencies</p>
+                        </div>
+                      </div>
+                      <div class="d-flex">
+                        <div class="me-3 text-primary">
+                          <i class="bi bi-graph-up fs-3"></i>
+                        </div>
+                        <div>
+                          <h5 class="h6">Monthly Reports</h5>
+                          <p class="small">Performance analytics and feedback</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 text-center text-md-start order-md-0">
+              <div class="step-number bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center">
+                4
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="row justify-content-center mt-5">
+      <div class="col-lg-8 text-center">
+        <div class="card border-0 bg-primary text-white">
+          <div class="card-body p-5">
+            <h3 class="mb-3">Ready to Get Started?</h3>
+            <p class="mb-4">Join 100+ schools in Lagos and other part of the country who trust Busly for safe student transportation</p>
+            <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
+              <a href="./requestservice.html" class="btn btn-light btn-lg px-4 fw-bold">Request Service</a>
+              <a href="./contact.html" class="btn btn-outline-light btn-lg px-4">Contact Us</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="bg-dark text-white py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-0">&copy; 2025 Busly. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="#" class="text-white text-decoration-none me-3">Privacy Policy</a>
+                    <a href="#" class="text-white text-decoration-none">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+<style>
+  .step-number {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .step-number::after {
+    content: '';
+    position: absolute;
+    width: 2px;
+    background-color: #dee2e6;
+    top: 100%;
+    left: 50%;
+    height: calc(100% + 2rem);
+    transform: translateX(-50%);
+    z-index: -1;
+  }
+  
+  .step:last-child .step-number::after {
+    display: none;
+  }
+  
+  @media (max-width: 767.98px) {
+    .step-number {
+      margin-bottom: 1.5rem;
+    }
+    
+    .step-number::after {
+      height: calc(100% + 1rem);
+    }
+  }
+</style>

@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Service | Busly - School Transport Solutions</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --busly-primary: #0056b3;
+            --busly-secondary: #FFC72C;
+            --busly-light: #f8f9fa;
+        }
+        
+        .request-hero {
+            background: linear-gradient(rgba(0, 86, 179, 0.9), rgba(0, 86, 179, 0.8)), 
+                        url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+        }
+        
+        .step-indicator {
+            position: relative;
+            padding-bottom: 20px;
+        }
+        
+        .step-indicator .step {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #dee2e6;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin: 0 auto 10px;
+        }
+        
+        .step-indicator .step.active {
+            background-color: var(--busly-primary);
+            color: white;
+        }
+        
+        .step-indicator .step.completed {
+            background-color: var(--busly-secondary);
+            color: var(--busly-primary);
+        }
+        
+        .step-indicator .step-title {
+            font-size: 0.8rem;
+            text-align: center;
+            color: #6c757d;
+        }
+        
+        .step-indicator .step-title.active {
+            color: var(--busly-primary);
+            font-weight: bold;
+        }
+        
+        .service-card {
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .service-card:hover {
+            border-color: var(--busly-primary);
+            transform: translateY(-5px);
+        }
+        
+        .service-card.selected {
+            border-color: var(--busly-primary);
+            background-color: rgba(0, 86, 179, 0.05);
+        }
+        
+        .form-section {
+            display: none;
+        }
+        
+        .form-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        #map-container {
+            height: 300px;
+            background-color: #eee;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .form-navigation {
+            border-top: 1px solid #dee2e6;
+            padding-top: 20px;
+        }
+        .busly-brand-text {
+            font-weight: 700;
+            color: white;
+        }
+        
+        .busly-brand-tagline {
+            font-size: 0.75rem;
+            color: var(--busly-secondary);
+            display: block;
+            line-height: 1;}
+    </style>
+</head>
+<body>
+    <!-- Navigation (Same as homepage) -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--busly-primary);">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <img src="./image/bus-front-fill.svg" alt="Busly Logo" height="40">
+                <div>
+                    <span class="busly-brand-text">BUSLY</span>
+                    <span class="busly-brand-tagline">School Transport Solutions</span>
+                </div>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarBusly">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarBusly">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="./home.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="./requestservice.html">Request Service</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Coverage Areas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Request Service Hero -->
+    <section class="request-hero py-5">
+        <div class="container py-4">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h1 class="display-5 fw-bold mb-3">Request School Transport Service</h1>
+                    <p class="lead mb-0">Complete this form to get started with Busly's safe and reliable student transportation solutions.</p>
+                </div>
+                <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+                    <div class="bg-white rounded-3 p-3 d-inline-block">
+                        <p class="mb-1 text-dark"><i class="bi bi-telephone-fill text-primary me-2"></i> Need help?</p>
+                        <h5 class="mb-0 text-primary">0800-BUSLY-NG</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Request Form -->
+    <section class="py-5">
+        <div class="container">
+            <!-- Step Indicator -->
+            <div class="row mb-5 step-indicator">
+                <div class="col">
+                    <div class="step active" data-step="1">1</div>
+                    <div class="step-title active">Service Type</div>
+                </div>
+                <div class="col">
+                    <div class="step" data-step="2">2</div>
+                    <div class="step-title">School Details</div>
+                </div>
+                <div class="col">
+                    <div class="step" data-step="3">3</div>
+                    <div class="step-title">Route Information</div>
+                </div>
+                <div class="col">
+                    <div class="step" data-step="4">4</div>
+                    <div class="step-title">Review & Submit</div>
+                </div>
+            </div>
+
+            <!-- Form Sections -->
+            <form id="serviceRequestForm">
+                <!-- Step 1: Service Type -->
+                <div class="form-section active" id="step1">
+                    <h3 class="mb-4">Select Service Type</h3>
+                    <div class="row g-4">
+                        <div class="col-md-6 col-lg-3">
+                            <div class="service-card p-4 text-center h-100" data-service="daily">
+                                <i class="bi bi-bus-front fs-1 text-primary mb-3"></i>
+                                <h5>Daily School Runs</h5>
+                                <p class="text-muted small">Regular morning and afternoon transportation</p>
+                                <div class="badge bg-primary">Most Popular</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <div class="service-card p-4 text-center h-100" data-service="field-trip">
+                                <i class="bi bi-geo-alt fs-1 text-primary mb-3"></i>
+                                <h5>Field Trips</h5>
+                                <p class="text-muted small">One-time or occasional educational trips</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <div class="service-card p-4 text-center h-100" data-service="special-needs">
+                                <i class="bi bi-heart fs-1 text-primary mb-3"></i>
+                                <h5>Special Needs</h5>
+                                <p class="text-muted small">Adapted vehicles for special requirements</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <div class="service-card p-4 text-center h-100" data-service="charter">
+                                <i class="bi bi-calendar-event fs-1 text-primary mb-3"></i>
+                                <h5>Bus Charter</h5>
+                                <p class="text-muted small">Full bus rental for events or activities</p>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="serviceType" name="serviceType" value="">
+                </div>
+
+                <!-- Step 2: School Details -->
+                <div class="form-section" id="step2">
+                    <h3 class="mb-4">School Information</h3>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="schoolName" class="form-label">School Name</label>
+                            <input type="text" class="form-control" id="schoolName" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="schoolType" class="form-label">School Type</label>
+                            <select class="form-select" id="schoolType" required>
+                                <option value="" selected disabled>Select school type</option>
+                                <option value="nursery">Nursery/Primary</option>
+                                <option value="secondary">Secondary</option>
+                                <option value="international">International School</option>
+                                <option value="special">Special Needs School</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="contactPerson" class="form-label">Contact Person</label>
+                            <input type="text" class="form-control" id="contactPerson" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="contactPhone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="contactPhone" required>
+                        </div>
+                        <div class="col-12">
+                            <label for="schoolAddress" class="form-label">School Address</label>
+                            <textarea class="form-control" id="schoolAddress" rows="2" required></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="studentsNumber" class="form-label">Number of Students Needing Transport</label>
+                            <input type="number" class="form-control" id="studentsNumber" min="1" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="startDate" class="form-label">Desired Start Date</label>
+                            <input type="date" class="form-control" id="startDate" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Route Information -->
+                <div class="form-section" id="step3">
+                    <h3 class="mb-4">Route Details</h3>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="coverageArea" class="form-label">Primary Coverage Area</label>
+                            <select class="form-select" id="coverageArea" required>
+                                <option value="" selected disabled>Select area</option>
+                                <option value="lagos-mainland">Lagos Mainland</option>
+                                <option value="lagos-island">Lagos Island</option>
+                                <option value="abuja">Abuja</option>
+                                <option value="port-harcourt">Port Harcourt</option>
+                                <option value="other">Other Location</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="pickupTime" class="form-label">Preferred Morning Pickup Time</label>
+                            <input type="time" class="form-control" id="pickupTime" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Main Pickup Locations</label>
+                            <div id="pickupLocations">
+                                <div class="input-group mb-2">
+                                    <input type="text" class="form-control" placeholder="Enter pickup location">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="addPickupLocation()">
+                                        <i class="bi bi-plus"></i> Add
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Map Your Locations</label>
+                            <div id="map-container">
+                                <!-- Map will be loaded here -->
+                                <div class="h-100 d-flex align-items-center justify-content-center bg-light">
+                                    <div class="text-center">
+                                        <i class="bi bi-map fs-1 text-muted"></i>
+                                        <p class="mt-2">Interactive map will appear here</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-text">Click to mark pickup and dropoff points</div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="specialRequirements">
+                                <label class="form-check-label" for="specialRequirements">
+                                    We have special route requirements (e.g., security concerns, difficult terrain)
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Review & Submit -->
+                <div class="form-section" id="step4">
+                    <h3 class="mb-4">Review Your Request</h3>
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Service Summary</h5>
+                            <div id="reviewContent">
+                                <!-- Dynamically populated -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label for="additionalNotes" class="form-label">Additional Notes (Optional)</label>
+                        <textarea class="form-control" id="additionalNotes" rows="3" placeholder="Any special instructions or requirements..."></textarea>
+                    </div>
+                    <div class="form-check mb-4">
+                        <input class="form-check-input" type="checkbox" id="agreeTerms" required>
+                        <label class="form-check-label" for="agreeTerms">
+                            I agree to Busly's <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                        <i class="bi bi-send-fill me-2"></i> Submit Request
+                    </button>
+                </div>
+
+                <!-- Form Navigation -->
+                <div class="form-navigation mt-5">
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-outline-secondary" id="prevBtn" disabled>
+                            <i class="bi bi-chevron-left me-2"></i> Previous
+                        </button>
+                        <button type="button" class="btn btn-primary" id="nextBtn">
+                            Next <i class="bi bi-chevron-right ms-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-0">&copy; 2025 Busly. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="#" class="text-white text-decoration-none me-3">Privacy Policy</a>
+                    <a href="#" class="text-white text-decoration-none">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Multi-step form functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('serviceRequestForm');
+            const formSections = document.querySelectorAll('.form-section');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const stepIndicators = document.querySelectorAll('.step-indicator .step');
+            let currentStep = 0;
+            
+            // Service card selection
+            const serviceCards = document.querySelectorAll('.service-card');
+            serviceCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    serviceCards.forEach(c => c.classList.remove('selected'));
+                    this.classList.add('selected');
+                    document.getElementById('serviceType').value = this.dataset.service;
+                });
+            });
+            
+            // Next button click
+            nextBtn.addEventListener('click', function() {
+                if (validateStep(currentStep)) {
+                    if (currentStep < formSections.length - 1) {
+                        formSections[currentStep].classList.remove('active');
+                        stepIndicators[currentStep].classList.remove('active');
+                        stepIndicators[currentStep].classList.add('completed');
+                        
+                        currentStep++;
+                        formSections[currentStep].classList.add('active');
+                        stepIndicators[currentStep].classList.add('active');
+                        
+                        updateButtons();
+                        
+                        // On last step, populate review
+                        if (currentStep === formSections.length - 1) {
+                            populateReview();
+                        }
+                    } else {
+                        form.submit(); // In a real app, you would submit the form
+                    }
+                }
+            });
+            
+            // Previous button click
+            prevBtn.addEventListener('click', function() {
+                if (currentStep > 0) {
+                    formSections[currentStep].classList.remove('active');
+                    stepIndicators[currentStep].classList.remove('active');
+                    
+                    currentStep--;
+                    formSections[currentStep].classList.add('active');
+                    stepIndicators[currentStep].classList.add('active');
+                    stepIndicators[currentStep].classList.remove('completed');
+                    
+                    updateButtons();
+                }
+            });
+            
+            // Validate current step
+            function validateStep(step) {
+                let valid = true;
+                
+                if (step === 0) {
+                    if (!document.getElementById('serviceType').value) {
+                        alert('Please select a service type');
+                        valid = false;
+                    }
+                } else if (step === 1) {
+                    const requiredFields = formSections[1].querySelectorAll('[required]');
+                    requiredFields.forEach(field => {
+                        if (!field.value) {
+                            field.classList.add('is-invalid');
+                            valid = false;
+                        } else {
+                            field.classList.remove('is-invalid');
+                        }
+                    });
+                    
+                    if (!valid) {
+                        alert('Please fill all required fields');
+                    }
+                }
+                
+                return valid;
+            }
+            
+            // Update button states
+            function updateButtons() {
+                if (currentStep === 0) {
+                    prevBtn.disabled = true;
+                } else {
+                    prevBtn.disabled = false;
+                }
+                
+                if (currentStep === formSections.length - 1) {
+                    nextBtn.innerHTML = '<i class="bi bi-send-fill me-2"></i> Submit Request';
+                } else {
+                    nextBtn.innerHTML = 'Next <i class="bi bi-chevron-right ms-2"></i>';
+                }
+            }
+            
+            // Populate review section
+            function populateReview() {
+                const reviewContent = document.getElementById('reviewContent');
+                let html = `
+                    <table class="table">
+                        <tr>
+                            <th>Service Type</th>
+                            <td>${getSelectedServiceName()}</td>
+                        </tr>
+                        <tr>
+                            <th>School Name</th>
+                            <td>${document.getElementById('schoolName').value}</td>
+                        </tr>
+                        <tr>
+                            <th>School Type</th>
+                            <td>${document.getElementById('schoolType').options[document.getElementById('schoolType').selectedIndex].text}</td>
+                        </tr>
+                        <tr>
+                            <th>Contact Person</th>
+                            <td>${document.getElementById('contactPerson').value}</td>
+                        </tr>
+                        <tr>
+                            <th>Number of Students</th>
+                            <td>${document.getElementById('studentsNumber').value}</td>
+                        </tr>
+                        <tr>
+                            <th>Coverage Area</th>
+                            <td>${document.getElementById('coverageArea').options[document.getElementById('coverageArea').selectedIndex].text}</td>
+                        </tr>
+                    </table>
+                `;
+                
+                reviewContent.innerHTML = html;
+            }
+            
+            function getSelectedServiceName() {
+                const selectedCard = document.querySelector('.service-card.selected');
+                return selectedCard ? selectedCard.querySelector('h5').textContent : 'Not selected';
+            }
+            
+            // Add pickup location field
+            window.addPickupLocation = function() {
+                const container = document.getElementById('pickupLocations');
+                const div = document.createElement('div');
+                div.className = 'input-group mb-2';
+                div.innerHTML = `
+                    <input type="text" class="form-control" placeholder="Enter pickup location">
+                    <button class="btn btn-outline-danger" type="button" onclick="this.parentElement.remove()">
+                        <i class="bi bi-trash"></i> Remove
+                    </button>
+                `;
+                container.appendChild(div);
+            };
+        });
+    </script>
+</body>
+</html>
